@@ -10,6 +10,7 @@ from datetime import datetime
 folder_path = '/mnt/c/TestFiles/'
 msg_files = glob.glob(f'{folder_path}*.msg')
 email_regex = r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
+email_data = []
 
 # Function to extract emails from a PDF file
 def extract_emails_from_pdf(pdf_path):
@@ -24,16 +25,13 @@ def extract_emails_from_pdf(pdf_path):
         print(f"Error extracting emails from PDF {pdf_path}: {e}")
     return emails
 
-# List to store email data
-email_data = []
-
 def filter_emails(emails):
     return [email for email in emails if '@origene.com' not in email.lower()]
 
 def format_date(date_string):
     try:
         parsed_date = datetime.strptime(date_string, '%a, %d %b %Y %H:%M:%S %z')
-        formatted_date = parsed_date.strftime('%a, %d %b %Y %H:%M')
+        formatted_date = parsed_date.strftime('%I:%M %p, %d %b %Y')
         return formatted_date
     except ValueError as e:
         print(f"Error formatting date: {e}")
@@ -50,7 +48,7 @@ for msg_file in msg_files:
     subject = msg.subject
     sender = msg.sender
     date = msg.date
-    
+
     formatted_date = format_date(date)
     body_emails = re.findall(email_regex, body)
     body_emails = filter_emails(body_emails)
@@ -60,13 +58,10 @@ for msg_file in msg_files:
     if msg.attachments:
         for attachment in msg.attachments:
             if attachment.longFilename.endswith('.pdf'):
-                # Save the attachment to the folder path
                 attachment_path = os.path.join(folder_path, attachment.longFilename)
                 with open(attachment_path, 'wb') as f:
-                    f.write(attachment.data)  # Save the attachment data as a binary file
-                attachment_emails += extract_emails_from_pdf(attachment_path)
-        
-        # Filter out emails from the attachment emails
+                    f.write(attachment.data)
+                attachment_emails += extract_emails_from_pdf(attachment_path)       
         attachment_emails = filter_emails(attachment_emails)
     
     # Combine emails from body and attachments
