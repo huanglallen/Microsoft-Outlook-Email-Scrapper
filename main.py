@@ -1,25 +1,41 @@
-import os
 import extract_msg
+import glob
+import pandas as pd
+import os  # Import os to manipulate file paths
 
-# msg = extract_msg.Message("path_to_your_msg_file.msg")
-msg = extract_msg.Message('/mnt/c/TestFiles/SR132650.msg')
+# Define folder path
+folder_path = '/mnt/c/TestFiles/'
+msg_files = glob.glob(f'{folder_path}*.msg')
 
-# Subject of the email
-subject = msg.subject
-print(f"Subject: {subject}")
+# List to store email data
+email_data = []
 
-# Sender's email address
-sender = msg.sender
-print(f"Sender: {sender}")
+# Loop through each .msg file
+for msg_file in msg_files:
+    # Load the .msg file
+    msg = extract_msg.Message(msg_file)
 
-# Recipient's email address
-recipient = msg.to
-print(f"Recipient: {recipient}")
+    # Extract email details
+    subject = msg.subject
+    sender = msg.sender
+    date = msg.date
+    
+    # Extract just the filename without the extension (e.g., 'SR132642')
+    file_name = os.path.splitext(os.path.basename(msg_file))[0]
+    
+    # Append data as a dictionary to the list
+    email_data.append({
+        'File': file_name,  # Use the modified file name without extension
+        'Subject': subject,
+        'Sender': sender,
+        'Date': date
+    })
 
-# Date the email was sent
-date = msg.date
-print(f"Date: {date}")
+# Create a Pandas DataFrame from the list
+df = pd.DataFrame(email_data)
 
-# Email body (HTML or plain text)
-body = msg.body
-print(f"Body: {body}")
+# Write DataFrame to Excel
+output_file = '/mnt/c/TestFiles/emails_output.xlsx'
+df.to_excel(output_file, index=False, engine='openpyxl')
+
+print(f"Data has been written to {output_file}")
