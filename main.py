@@ -12,7 +12,6 @@ msg_files = glob.glob(f'{folder_path}*.msg')
 email_regex = r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
 email_data = []
 
-# Function to extract emails from a PDF file
 def extract_emails_from_pdf(pdf_path):
     emails = []
     try:
@@ -37,7 +36,6 @@ def format_date(date_string):
         print(f"Error formatting date: {e}")
         return date_string
 
-# Loop through each .msg file
 for msg_file in msg_files:
     try:
         msg = extract_msg.Message(msg_file)
@@ -64,10 +62,7 @@ for msg_file in msg_files:
                 attachment_emails += extract_emails_from_pdf(attachment_path)       
         attachment_emails = filter_emails(attachment_emails)
     
-    # Combine emails from body and attachments
     all_emails = body_emails + attachment_emails
-
-    # Extract just the filename
     file_name = os.path.splitext(os.path.basename(msg_file))[0]
     
     email_data.append({
@@ -78,10 +73,8 @@ for msg_file in msg_files:
         'Emails': "; ".join(set(all_emails))
     })
 
-# Create a Pandas DataFrame from the list
 df = pd.DataFrame(email_data)
 
-# Write DataFrame to Excel
 output_file = '/mnt/c/TestFiles/emails_output.xlsx'
 try:
     df.to_excel(output_file, index=False, engine='openpyxl')
