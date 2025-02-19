@@ -7,6 +7,11 @@ from PyPDF2 import PdfReader
 from openpyxl import load_workbook
 from datetime import datetime
 
+folder_path = '/mnt/c/TestFiles/'
+msg_files = glob.glob(f'{folder_path}*.msg')
+email_regex = r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
+email_data = []
+
 def extract_emails_from_pdf(pdf_path):
     emails = []
     try:
@@ -38,11 +43,6 @@ def format_date(date_string):
         return date_string
 
 def main():
-    folder_path = '/mnt/c/TestFiles/'
-    msg_files = glob.glob(f'{folder_path}*.msg')
-    email_regex = r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
-    email_data = []
-
     for msg_file in msg_files:
         try:
             msg = extract_msg.Message(msg_file)
@@ -50,7 +50,6 @@ def main():
             print(f"Error processing {msg_file}: {e}")
             continue
         
-        # Check if the body exists and is a valid string
         body = msg.body
         if not isinstance(body, str):
             print(f"Skipping file {msg_file} due to invalid body content.")
@@ -80,10 +79,7 @@ def main():
                         f.write(attachment.data)
                     attachment_emails += extract_emails_from_pdf(attachment_path)
 
-        # Combine emails from body and attachments
         all_emails = body_emails + attachment_emails
-
-        # Ensure the sender's email is in the email list (if it's not already there)
         if sender_email and sender_email not in all_emails:
             all_emails.append(sender_email)
 
