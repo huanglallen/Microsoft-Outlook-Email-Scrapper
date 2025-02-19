@@ -25,7 +25,7 @@ def extract_emails_from_pdf(pdf_path):
     return emails
 
 def filter_emails(emails):
-    keywords_to_filter = ['origene', 'support', 'sale', 'product', 'purchas', 'order', 'account', 'pay', 'bill', 'buy', 'track', 'team', 'custom', 'info', 'ship', 'suppl', 'invoic', 'help', 'admin', 'subscribe', 'reply', 'confirm', 'exped', 'procure', 'service', 'financ', 'trade', 'notif', 'communica', 'data', 'stock', 'contact', 'quote', 'po-', 'po_', 'po@', 'ap-', 'ap_', 'ap@']
+    keywords_to_filter = ['origene', 'support', 'sale', 'product', 'purchas', 'order', 'account', 'pay', 'bill', 'buy', 'track', 'team', 'custom', 'info', 'ship', 'suppl', 'invoic', 'help', 'admin', 'subscribe', 'reply', 'confirm', 'exped', 'procure', 'service', 'financ', 'trade', 'notif', 'communica', 'data', 'stock', 'contact', 'quote', 'market', 'po-', 'po_', 'po@', 'ap-', 'ap_', 'ap@']
     filtered_emails = [
         email for email in emails
         if not any(keyword in email.lower() for keyword in keywords_to_filter)
