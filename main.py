@@ -7,7 +7,6 @@ from PyPDF2 import PdfReader
 from openpyxl import load_workbook
 from datetime import datetime
 
-# Function to extract emails from a PDF file
 def extract_emails_from_pdf(pdf_path):
     emails = []
     try:
@@ -20,18 +19,15 @@ def extract_emails_from_pdf(pdf_path):
         print(f"Error extracting emails from PDF {pdf_path}: {e}")
     return emails
 
-# Function to filter emails based on specific keywords
 def filter_emails(emails):
-    keywords_to_filter = ['origene', 'support', 'sale', 'product', 'purchas', 'order', 'account', 'pay', 'bill', 'buy', 'track', 'team', 'custom', 'info', 'ship', 'suppl', 'invoic', 'help', 'admin', 'subscribe', 'reply', 'confirm', 'exped', 'procure', 'service', 'financ', 'trade', 'notif', 'communica', 'data', 'stock', 'contact', 'quote', 'market', 'po-', 'po_', 'po@', 'ap-', 'ap_', 'ap@']
+    keywords_to_filter = ['origene', 'support', 'sale', 'product', 'purchas', 'order', 'account', 'pay', 'bill', 'buy', 'track', 'team', 'custom', 'info', 'ship', 'suppl', 'invoic', 'help', 'admin', 'subscribe', 'reply', 'confirm', 'exped', 'procure', 'service', 'financ', 'trade', 'notif', 'communica', 'data', 'stock', 'contact', 'quote', 'market', 'vendor', 'po-', 'po_', 'po@', 'ap-', 'ap_', 'ap@']
     
-    # Filter the emails based on the presence of any unwanted keywords
     filtered_emails = [
         email for email in emails
         if not any(keyword in email.lower() for keyword in keywords_to_filter)
     ]
     return filtered_emails
 
-# Function to format the email date
 def format_date(date_string):
     try:
         parsed_date = datetime.strptime(date_string, '%a, %d %b %Y %H:%M:%S %z')
@@ -41,7 +37,6 @@ def format_date(date_string):
         print(f"Error formatting date: {e}")
         return date_string
 
-# Main function to execute the script
 def main():
     folder_path = '/mnt/c/TestFiles/'
     msg_files = glob.glob(f'{folder_path}*.msg')
@@ -70,7 +65,7 @@ def main():
         if sender_email:
             sender_email = sender_email[0]
         else:
-            sender_email = sender  # If no email in sender string, just use the sender string as is
+            sender_email = sender
 
         formatted_date = format_date(date)
         body_emails = re.findall(email_regex, body)
@@ -98,13 +93,12 @@ def main():
         # Extract just the filename (without the path and extension)
         file_name = os.path.splitext(os.path.basename(msg_file))[0]
 
-        # Append the email data to the list
         email_data.append({
             'Date': formatted_date,
             'File': file_name,
             'Subject': subject,
             'Sender': sender,
-            'Emails': "; ".join(set(all_emails))  # Remove duplicates by using set()
+            'Emails': "; ".join(set(all_emails))
         })
 
     # Create a Pandas DataFrame from the list
@@ -123,7 +117,6 @@ def main():
         wb = load_workbook(output_file)
         ws = wb.active
 
-        # Adjust column widths based on content
         for col in ws.columns:
             max_length = 0
             column = col[0].column_letter 
@@ -143,6 +136,5 @@ def main():
     except Exception as e:
         print(f"Error writing file: {e}")
 
-# Entry point of the script
 if __name__ == "__main__":
     main()
