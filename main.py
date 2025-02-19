@@ -25,7 +25,7 @@ def extract_emails_from_pdf(pdf_path):
     return emails
 
 def filter_emails(emails):
-    keywords_to_filter = ['origene', 'support', 'sale', 'purchas', 'order', 'account', 'pay', 'buy', 'track', 'info', 'ship', 'suppl', 'invoic', 'help', 'admin', 'subscribe', 'reply', 'confirm', 'exped', 'procure', 'service', 'financ', 'trade', 'notif', 'communica', 'po-', 'po_', 'po@', 'ap-', 'ap_', 'ap@']
+    keywords_to_filter = ['origene', 'support', 'sale', 'product', 'purchas', 'order', 'account', 'pay', 'bill', 'buy', 'track', 'team', 'custom', 'info', 'ship', 'suppl', 'invoic', 'help', 'admin', 'subscribe', 'reply', 'confirm', 'exped', 'procure', 'service', 'financ', 'trade', 'notif', 'communica', 'data', 'stock', 'contact', 'quote', 'po-', 'po_', 'po@', 'ap-', 'ap_', 'ap@']
     filtered_emails = [
         email for email in emails
         if not any(keyword in email.lower() for keyword in keywords_to_filter)
@@ -63,7 +63,7 @@ for msg_file in msg_files:
     if sender_email:
         sender_email = sender_email[0]
     else:
-        sender_email = sender  # If no email in sender string, just use the sender string as is
+        sender_email = sender
 
     formatted_date = format_date(date)
     body_emails = re.findall(email_regex, body)
@@ -96,7 +96,7 @@ for msg_file in msg_files:
         'File': file_name,
         'Subject': subject,
         'Sender': sender,
-        'Emails': "; ".join(set(all_emails))  # Remove duplicates by using set()
+        'Emails': "; ".join(set(all_emails))
     })
 
 # Create a Pandas DataFrame from the list
@@ -111,7 +111,7 @@ try:
     df.to_excel(output_file, index=False, engine='openpyxl')
     print(f"Data has been written to {output_file}")
     
-    # Load the workbook to adjust column widths
+    # Adjust column widths
     wb = load_workbook(output_file)
     ws = wb.active
 
