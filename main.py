@@ -7,7 +7,7 @@ from PyPDF2 import PdfReader
 from openpyxl import load_workbook
 from datetime import datetime
 
-folder_path = '/mnt/c/TestFiles/'
+folder_path = '/mnt/s/SalesOrderTest/SalesOrder/'
 msg_files = glob.glob(f'{folder_path}*.msg')
 email_regex = r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
 email_data = []
@@ -34,13 +34,15 @@ def filter_emails(emails):
     return filtered_emails
 
 def format_date(date_string):
+    if not date_string:
+        return "" 
     try:
         parsed_date = datetime.strptime(date_string, '%a, %d %b %Y %H:%M:%S %z')
         formatted_date = parsed_date.strftime('%I:%M %p, %d %b %Y')
         return formatted_date
     except ValueError as e:
         print(f"Error formatting date: {e}")
-        return date_string
+        return ""
 
 def main():
     for msg_file in msg_files:
@@ -60,11 +62,14 @@ def main():
         date = msg.date
 
         # Ensure the sender's email is extracted from the sender string
-        sender_email = re.findall(email_regex, sender)
+        sender_email = None
+        if isinstance(sender, str): 
+            sender_email = re.findall(email_regex, sender)
         if sender_email:
             sender_email = sender_email[0]
         else:
-            sender_email = sender
+            sender_email = sender  
+
 
         formatted_date = format_date(date)
         body_emails = re.findall(email_regex, body)
@@ -104,7 +109,7 @@ def main():
     df = df[df['Emails'].str.strip().astype(bool)]
 
     # Write DataFrame to Excel
-    output_file = '/mnt/c/TestFiles/emails_output.xlsx'
+    output_file = '/mnt/s/SalesOrderTest/emails_output.xlsx'
     try:
         df.to_excel(output_file, index=False, engine='openpyxl')
         print(f"Data has been written to {output_file}")
